@@ -6,6 +6,7 @@ exports.getOrganisations = (req, res, next) => {
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
     res.status(400).send(validationErrors.array());
+    return;
   }
   OrganisationService.getOrganisationRelations(req.query)
     .then((result) => {
