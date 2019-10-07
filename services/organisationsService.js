@@ -31,6 +31,7 @@ const postOrganisationRelations = async (jsonBody) => {
     };
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
+      error.message = 'Organisation name already exists in the database';
       error.statusCode = 400;
     }
     throw error;
@@ -140,7 +141,7 @@ const checkIfOrganisationExists = async (organisationName) => OrganisationsModel
 );
 
 const getAllRelations = (organisationName, limit, offset) => {
-  const query = `
+  const findParentsQuery = `
   WITH
       cte_parents
       AS
@@ -151,30 +152,36 @@ const getAllRelations = (organisationName, limit, offset) => {
           FROM organisations
           WHERE name = :name)
       )
-      select 'parent' as relationship_type, orgs.name as org_name from cte_parents as orgs
-  UNION
-      SELECT DISTINCT 'sister', orgs.name
+      select 'parent' as relationship_type, orgs.name as org_name from cte_parents as orgs`;
+
+  const findSistersQuery = `SELECT DISTINCT 'sister', orgs.name
       FROM organisations AS orgs JOIN organisation_relationships AS org_relationships ON orgs.id = org_relationships."organisationId"
       where "parentId" IN (select id
-      from cte_parents)
-  UNION
-      SELECT 'children', orgs.name
+      from cte_parents)`;
+
+  const findDaughterQuery = ` SELECT 'daughter', orgs.name
       FROM organisations AS orgs JOIN organisation_relationships AS org_relationships ON orgs.id = org_relationships."organisationId"
       WHERE "parentId" = (SELECT id
       FROM organisations AS sub_orgs
-      WHERE sub_orgs.name = :name) ORDER BY org_name LIMIT :limit OFFSET :offset
-  `;
+      WHERE sub_orgs.name = :name) ORDER BY org_name LIMIT :limit OFFSET :offset`;
+
+  const finalQuery = `${findParentsQuery} UNION ${findSistersQuery} UNION ${findDaughterQuery}`;
 
   return sequelize
-    .query(query,
+    .query(finalQuery,
       {
         replacements: { name: organisationName, limit, offset },
         type: sequelize.QueryTypes.SELECT,
       });
 };
 
+const resetDatabase = () => {
+  OrganisationsModel.truncate({ cascade: true });
+  OrganisationRelationshipsModel.truncate();
+};
 
 module.exports = {
   postOrganisationRelations,
   getOrganisationRelations,
+  resetDatabase,
 };

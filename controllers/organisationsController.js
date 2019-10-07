@@ -19,9 +19,14 @@ exports.getOrganisations = (req, res, next) => {
 exports.postOrganisations = (req, res, next) => {
   OrganisationService.postOrganisationRelations(req.body)
     .then((result) => {
-      res.status(200).send(result);
+      res.status(201).send(result);
     })
     .catch((err) => {
       next(err);
     });
+};
+
+exports.reset = (req, res) => {
+  OrganisationService.resetDatabase();
+  res.send();
 };

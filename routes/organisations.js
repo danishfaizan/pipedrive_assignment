@@ -5,6 +5,8 @@ const organisationsController = require('../controllers/organisationsController'
 
 const router = express.Router();
 
+router.get('/reset', organisationsController.reset);
+
 router.get(
   '/',
   query('organisation_name')

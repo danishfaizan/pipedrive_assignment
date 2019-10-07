@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 app.use('/api', routes);
 
-app.use((error, req, res) => {
+app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
   const { message } = error;
   res.status(status).send({ message });
