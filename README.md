@@ -93,6 +93,7 @@ Example JSON body:-
 }
 ```
 3. GET: http://localhost:3000/api/organisations/?organisation_name=Black%20Banana&limit=10&page=1
+
 Following is a sample response:-
 ```
 [
