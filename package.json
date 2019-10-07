@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Pipedrive assignment task",
   "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danishfaizan/pipedrive_assignment.git"
+  },
   "scripts": {
     "test": "mocha",
     "start": "node app.js"

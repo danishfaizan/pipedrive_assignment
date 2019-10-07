@@ -15,9 +15,7 @@ const postOrganisationRelations = async (jsonBody) => {
   );
 
   try {
-    const bulkInsertOrganisationResult = await bulkInsertOrganisations(
-      organisationToUUIDMap,
-    );
+    const bulkInsertOrganisationResult = await bulkInsertOrganisations(organisationToUUIDMap);
 
     const bulkInsertOrganisationsRelationsResult = await bulkInsertOrganisationsRelations(
       flattenedOrganisations,
